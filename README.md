@@ -13,13 +13,10 @@ Examples of these scripts are found in the [examples](examples/) folder.
 |3d Model industrial floor system| Loading |
 |---|---|
 |![3d floor system](examples/example_industrial_floor_3d.png)|![Loads](examples/example_industrial_floor_loads.png)|
-|---|---|
 |Moment about local y lines output| Moment about local z lines output |
-|![My](examples/example_industrial_floor_My.png)|![Mz](examples/example_industrial_floor_My.png)|
-|---|---|
+|![My](examples/example_industrial_floor_My.png)|![Mz](examples/example_industrial_floor_Mz.png)|
 |Normal stresses output| Displacement output |
 |![My](examples/example_industrial_floor_sigma_n.png)|![Mz](examples/example_industrial_floor_u.png)|
-|---|---|
 
 To use edsFEM, you need to have the Python programming language installed.
 
@@ -29,7 +26,5 @@ To be able to use edsFEM to its full extents, you need the additional packages l
 |---|---|
 |Edsfem|numpy|
 ||scipy|
-|---|---|
 |Renderer|panda3d|
 ||PIL|
-|---|---|
