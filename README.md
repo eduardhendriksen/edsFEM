@@ -24,7 +24,7 @@ To be able to use edsFEM to its full extents, you need the additional packages l
 
 |Functionality|packages|
 |---|---|
-|Edsfem|numpy|
+|edsFEM|numpy|
 ||scipy|
 |Renderer|panda3d|
 ||PIL|
