@@ -2,6 +2,8 @@
 
 edsFEM is an open source, simple, 3d, frame analysis software package.
 
+For simple static structural mechanics, it is the perfect solution.
+
 It is usable by setting up a structural model, including beams, supports and loads in a script.
 
 Using these scripts it is possible to render model geometry and results of the analysis in a simple gui.
@@ -47,9 +49,9 @@ To use edsFEM, you need to have the Python programming language installed.
 
 To be able to use edsFEM to its full extents, you need the additional packages listed here;
 
-|Functionality|packages|
-|---|---|
-|edsFEM|numpy|
-||scipy|
-|Renderer|panda3d|
-||PIL|
+|Functionality|packages|Website|
+|---|---|---|
+|edsFEM|numpy|http://www.numpy.org/|
+||scipy|https://www.scipy.org/|
+|Renderer|panda3d|https://www.panda3d.org/|
+||PIL|https://pillow.readthedocs.io/en/stable/|
