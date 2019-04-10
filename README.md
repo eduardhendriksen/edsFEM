@@ -13,7 +13,7 @@ Examples of these scripts are found in the [examples](examples/) folder.
 |3d Model industrial floor system| Loading |
 |---|---|
 |![3d floor system](examples/example_industrial_floor_3d.png)|![Loads](examples/example_industrial_floor_loads.png)|
-|Moment about local y lines output| Moment about local z lines output |
+|Moment lines about local y| Moment lines about local z|
 |![My](examples/example_industrial_floor_My.png)|![Mz](examples/example_industrial_floor_Mz.png)|
 |Normal stresses output| Displacement output |
 |![My](examples/example_industrial_floor_sigma_n.png)|![Mz](examples/example_industrial_floor_u.png)|
