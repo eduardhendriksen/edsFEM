@@ -313,7 +313,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[0],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(c_points[4],
                                         c_points[0],
@@ -323,7 +323,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(c_points[0],
                                         p_points[0],
@@ -344,7 +344,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(o_points[1],
                                         o_points[2],
@@ -354,7 +354,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(o_points[2],
                                         o_points[3],
@@ -364,7 +364,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(o_points[3],
                                         p_points[11],
@@ -385,7 +385,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(c_points[3],
                                         c_points[7],
@@ -400,7 +400,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(o_points[4],
                                         o_points[5],
@@ -410,7 +410,7 @@ if __name__ == '__main__':
 
         fem_sys.add_support(o_beams[-1].nodes[-1],
                             t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=False, r_y=False, r_z=False)
 
         o_beams.append(fem_sys.add_beam(o_points[5],
                                         o_points[0],
