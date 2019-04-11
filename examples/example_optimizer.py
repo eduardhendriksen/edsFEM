@@ -64,30 +64,30 @@ if __name__ == '__main__':
         beams.append(fem_sys.add_beam(p_0, p_2, profile=HEA_450,
                                       release=end_releases, segments=s))
         fem_sys.add_support(beams[-1].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
         fem_sys.add_support(beams[-1].nodes[-1], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         beams.append(fem_sys.add_beam(p_0, p_3, profile=HEA_450,
                                       release=end_releases, segments=s))
         fem_sys.add_support(beams[-1].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         beams.append(fem_sys.add_beam(p_3, p_9, profile=HEA_450,
                                       release=end_releases, segments=s))
         fem_sys.add_support(beams[-1].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         beams.append(fem_sys.add_beam(p_1, p_4, profile=HEA_450,
                                       release=r_1, segments=s))
         fem_sys.add_support(beams[-1].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         beams.append(fem_sys.add_beam(p_4, p_6, profile=HEA_450,
                                       release=r_2, segments=s))
 
         fem_sys.add_support(beams[-1].nodes[-1], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         beams.append(fem_sys.add_beam(p_4, p_5, profile=HEA_450,
                                       release=r_1, segments=s))
@@ -101,12 +101,12 @@ if __name__ == '__main__':
         beams.append(fem_sys.add_beam(p_2, p_8, profile=HEA_450,
                                       release=r_1, segments=s))
         fem_sys.add_support(beams[-1].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         beams.append(fem_sys.add_beam(p_8, p_9, profile=HEA_450,
                                       release=r_2, segments=s))
         fem_sys.add_support(beams[-1].nodes[-1], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         print()
         print("Setting up took: " +

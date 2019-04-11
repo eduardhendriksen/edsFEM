@@ -142,13 +142,13 @@ if __name__ == '__main__':
         fem_sys.add_beam(p_17, p_13, profile=prof_8)
 
         fem_sys.add_support(fem_sys.beams[-4].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
         fem_sys.add_support(fem_sys.beams[-3].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
         fem_sys.add_support(fem_sys.beams[-2].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
         fem_sys.add_support(fem_sys.beams[-1].nodes[0], t_x=0, t_y=0, t_z=0,
-                            r_x=1, r_y=1, r_z=1)
+                            r_x=None, r_y=None, r_z=None)
 
         fem_sys.assemble(selfweight=Factor)
         fem_sys.solve()

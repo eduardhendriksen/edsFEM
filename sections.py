@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Section():
     """
     The section class stores the basic mechanical properties of a structural
@@ -27,6 +30,7 @@ class Section():
         self.Wz_el = Wz_el
         self.g_stiff = 0
         self.stiffeners = None
+        self.type = None
 
 
 class IBeam(Section):
@@ -81,6 +85,7 @@ class IBeam(Section):
         self.i_z = i_z
         self.S_s = S_s
         self.I_w = I_w
+        self.type = 'IBeam'
 
         self.stiffeners = stiffeners
 
@@ -116,6 +121,11 @@ class IBeam(Section):
                                        ((1 / 12) * (h) * (self.b)**3)) / (b/2))
                         self.g_stiff = 2 * (h) * (th) * 7800e-9
                         self.g += self.g_stiff
+
+                    if stiff.direction == 'hor':
+                        self.designation += (' s. ' +
+                                             str(int(stiff.thickness)) +
+                                             'mm long.')
                     else:
                         raise NotImplementedError("Only horizontal stiffeners "
                                                   + "implemented")
@@ -196,7 +206,7 @@ class WeldedIBeam(IBeam):
 
         returns:
 
-        A: Area of welded section (mm²)
+        A: Area of the welded section (mm²)
         """
         A = 2 * b * t_f
         A += (h - 2 * t_f) * t_w
@@ -330,6 +340,19 @@ class WeldedIBeam(IBeam):
         return 0
 
     def calc_I_t(self, h, b, t_w, t_f, a):
+        """
+        Calculates the torsional constant I_t
+
+        h: Section height (mm)
+        b: Section width (mm)
+        t_w: Web thickness (mm)
+        t_f: Flange thickness (mm)
+        a: Throat thickness of the fillet welds (mm)
+
+        returns:
+
+        I_t: Torsional constant (mm^4)
+        """
         I_t = 1.15 * (1/3) * ((2 * b * t_f**3) + ((h - 2*t_f)*t_w**3))
         return I_t
 
@@ -404,6 +427,7 @@ class UBeam(Section):
         self.i_z = i_z
         self.S_s = S_s
         self.I_w = I_w
+        self.type = 'UBeam'
 
 
 class LBeam(Section):
@@ -446,6 +470,7 @@ class LBeam(Section):
         self.r_1 = r_1
         self.i_y = i_y
         self.i_z = i_z
+        self.type = 'LBeam'
 
 
 class Stiffeners():
@@ -465,3 +490,85 @@ class Stiffeners():
 
         self.direction = direction
         self.thickness = thickness
+
+
+class CHS(Section):
+    """
+    The CHS class stores the mechanical properties and methods of the Circular
+    Hollow Section type of structural section.
+    """
+
+    def __init__(self, E, G, D, t, rho=7800e-9):
+        """
+        Initializes the CHS class and calculates the relevant mechanical
+        properties of the section.
+
+        E: Young's modulus (N/mm²)
+        G: Shear modulus (N/mm²)
+        D: Section diameter (mm)
+        t: Section thickness (mm)
+        rho: Section density (kg/mm^3)
+        """
+        self.designation = "Ø {:.1f} mm, t {:.1f} mm".format(D, t)
+        self.D = D
+        self.t = t
+        A = self.calc_A(D, t)
+        self.g = rho * A
+        I_y, I_z = self.calc_I(D, t)
+        I_t = self.calc_I_t(D, t)
+        Wy_el, Wz_el = self.calc_W(D, t)
+        self.type = 'CHS'
+        Section.__init__(self, E, A, I_y, I_z, G, I_t, Wy_el, Wz_el)
+
+    def calc_A(self, D, t):
+        """
+        Calculates the area of the CHS
+
+        D: Section diameter (mm)
+        t: Section thickness (mm)
+
+        returns:
+        A: Area of the CHS (mm²)
+        """
+        return (1/4)*np.pi*(D)**2 - (1/4)*np.pi*(D-2*t)**2
+
+    def calc_I(self, D, t):
+        """
+        Calculates the moments of inertia of the CHS
+
+        D: Section diameter (mm)
+        t: Section thickness (mm)
+
+        returns:
+        I_y: Moment of Inertia around y-axis (mm^4)
+        I_z: Moment of Inertia around y-axis (mm^4)
+        """
+        I_y_z = (1/64)*np.pi*D**4 - (1/64)*np.pi*(D-2*t)**4
+        return I_y_z, I_y_z
+
+    def calc_W(self, D, t):
+        """
+        Calculates the elastic section moduli of the CHS
+
+        D: Section diameter (mm)
+        t: Section thickness (mm)
+
+        returns:
+        Wy_el: Elastic section modulus around y-axis (mm^4)
+        Wz_el: Elastic section modulus around y-axis (mm^4)
+        """
+        I_y_z = (1/64)*np.pi*D**4 - (1/64)*np.pi*(D-2*t)**4
+        W_el = (2 * I_y_z) / (D-2*t)
+        return W_el, W_el
+
+    def calc_I_t(self, D, t):
+        """
+        Calculates the torsional constant of the CHS
+
+        D: Section diameter (mm)
+        t: Section thickness (mm)
+
+        returns:
+        I_t: Torsional constant (mm^4)
+        """
+        return 2 * ((1/64)*np.pi*D**4 - (1/64)*np.pi*(D-2*t)**4)

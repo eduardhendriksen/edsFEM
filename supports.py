@@ -9,8 +9,8 @@ class Support():
     or fully free in the different degrees of freedom.
     """
 
-    def __init__(self, ID, node, t_x=False, t_y=False, t_z=False,
-                 r_x=False, r_y=False, r_z=False, loc_cs=None):
+    def __init__(self, ID, node, t_x=None, t_y=None, t_z=None,
+                 r_x=None, r_y=None, r_z=None, loc_cs=None):
         """
         node: the node the support is attached to
         t_x: 0 - fixed

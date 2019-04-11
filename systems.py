@@ -48,6 +48,8 @@ class System():
         self.f_reduced = None
         self.u_reduced = None
 
+        self.self_save()
+
     def assemble(self, version='Beam', selfweight=None, t_test=False):
         """
         This method assembles the reduced stiffness matrix and displacement
@@ -449,3 +451,30 @@ class System():
         for q_load in sw:
             for p_load in q_load.loads:
                 p_load.remove()
+
+    def self_save(self, loc=None):
+        """
+        Self-saves the edsFEM to a backup location.
+        """
+
+        import edsFEM
+        import os
+        self.m_path = os.path.dirname(edsFEM.__file__)
+        if loc is None:
+            loc = 'C:\\Users\\eduard.hendriksen\\OneDrive\\edsFEM'
+        if os.path.isdir(loc):
+
+            import shutil
+
+            m_files = [k for k in os.listdir(self.m_path) if
+                       os.path.splitext(k)[-1] == '.py']
+
+            for m_f, t_f in zip([os.path.join(self.m_path, k)
+                                 for k in m_files],
+                                [os.path.join(loc, k)
+                                 for k in m_files]):
+                shutil.copy(m_f, t_f)
+        else:
+            print()
+            print("Self-save has not been performed.")
+            print()
