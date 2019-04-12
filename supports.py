@@ -16,7 +16,7 @@ class Support():
         t_x: 0 - fixed
              any number != 0 - support stiffness in kN/m (=N/mm) (not
              functional at this timepoint!)
-             False - free
+             None - free
 
         In its current iteration the supports may only be fixed or free for the
         given degree of freedom.

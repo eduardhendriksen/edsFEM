@@ -162,7 +162,7 @@ class BeamAssembler(Assembler):
 
                     f[j] = node.Fx
 
-                elif node.support.t_x is False:
+                elif node.support.t_x is None:
 
                     if node.ux is 0:
 
@@ -197,7 +197,7 @@ class BeamAssembler(Assembler):
 
                     f[j+1] = node.Fy
 
-                elif node.support.t_y is False:
+                elif node.support.t_y is None:
 
                     if node.uy is 0:
 
@@ -232,7 +232,7 @@ class BeamAssembler(Assembler):
 
                     f[j+2] = node.Fz
 
-                elif node.support.t_z is False:
+                elif node.support.t_z is None:
 
                     if node.uz is 0:
 
@@ -267,7 +267,7 @@ class BeamAssembler(Assembler):
 
                     f[j+3] = node.Tx
 
-                elif node.support.r_x is False:
+                elif node.support.r_x is None:
 
                     if node.phi_x is 0:
 
@@ -302,7 +302,7 @@ class BeamAssembler(Assembler):
 
                     f[j+4] = node.Ty
 
-                elif node.support.r_y is False:
+                elif node.support.r_y is None:
 
                     if node.phi_y is 0:
 
@@ -337,7 +337,7 @@ class BeamAssembler(Assembler):
 
                     f[j+5] = node.Tz
 
-                elif node.support.r_z is False:
+                elif node.support.r_z is None:
 
                     if node.phi_z is 0:
 

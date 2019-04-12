@@ -205,8 +205,7 @@ if __name__ == '__main__':
                         renderbox.render_node(node, scale='mm')
 
             if fem_sys.beams is not None:
-                for beam in fem_sys.beams:
-                    renderbox.render_beam(beam, scale='mm')
+                renderbox.cmd_render_beams(fem_sys.beams, scale='mm')
 
             renderbox.make_button('supports', [fem_sys.nodes, 'mm', 8])
             renderbox.make_button('beams', [fem_sys.beams, 'mm', None])
