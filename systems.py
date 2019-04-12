@@ -323,8 +323,8 @@ class System():
 
         return element
 
-    def add_support(self, node, t_x=False, t_y=False, t_z=False,
-                    r_x=False, r_y=False, r_z=False):
+    def add_support(self, node, t_x=None, t_y=None, t_z=None,
+                    r_x=None, r_y=None, r_z=None):
         """
         This method adds a Support to the specified node.
 
@@ -332,7 +332,7 @@ class System():
         t_x: 0 - fixed
              any number != 0 - support stiffness in kN/m (=N/mm) (not
              functional at this timepoint!)
-             False - free
+             None - free
 
         In its current iteration the supports may only be fixed or free for the
         given degree of freedom.
@@ -451,30 +451,3 @@ class System():
         for q_load in sw:
             for p_load in q_load.loads:
                 p_load.remove()
-
-    def self_save(self, loc=None):
-        """
-        Self-saves the edsFEM to a backup location.
-        """
-
-        import edsFEM
-        import os
-        self.m_path = os.path.dirname(edsFEM.__file__)
-        if loc is None:
-            loc = 'C:\\Users\\eduard.hendriksen\\OneDrive\\edsFEM'
-        if os.path.isdir(loc):
-
-            import shutil
-
-            m_files = [k for k in os.listdir(self.m_path) if
-                       os.path.splitext(k)[-1] == '.py']
-
-            for m_f, t_f in zip([os.path.join(self.m_path, k)
-                                 for k in m_files],
-                                [os.path.join(loc, k)
-                                 for k in m_files]):
-                shutil.copy(m_f, t_f)
-        else:
-            print()
-            print("Self-save has not been performed.")
-            print()

@@ -162,7 +162,7 @@ class BeamAssembler(Assembler):
 
                     f[j] = node.Fx
 
-                elif node.support.t_x is False:
+                elif node.support.t_x is None:
 
                     if node.ux is 0:
 
@@ -197,7 +197,7 @@ class BeamAssembler(Assembler):
 
                     f[j+1] = node.Fy
 
-                elif node.support.t_y is False:
+                elif node.support.t_y is None:
 
                     if node.uy is 0:
 
@@ -232,7 +232,7 @@ class BeamAssembler(Assembler):
 
                     f[j+2] = node.Fz
 
-                elif node.support.t_z is False:
+                elif node.support.t_z is None:
 
                     if node.uz is 0:
 
@@ -267,7 +267,7 @@ class BeamAssembler(Assembler):
 
                     f[j+3] = node.Tx
 
-                elif node.support.r_x is False:
+                elif node.support.r_x is None:
 
                     if node.phi_x is 0:
 
@@ -302,7 +302,7 @@ class BeamAssembler(Assembler):
 
                     f[j+4] = node.Ty
 
-                elif node.support.r_y is False:
+                elif node.support.r_y is None:
 
                     if node.phi_y is 0:
 
@@ -337,7 +337,7 @@ class BeamAssembler(Assembler):
 
                     f[j+5] = node.Tz
 
-                elif node.support.r_z is False:
+                elif node.support.r_z is None:
 
                     if node.phi_z is 0:
 
@@ -436,29 +436,27 @@ class BeamAssembler(Assembler):
                       "{:.1e}".format(tol))
                 print()
 
-                self.system.k_matrix = k
-                self.system.f_vector = f
-                self.system.u_vector = u
-
-                # TODO: insert non-zero boundary conditions
-
                 if t_test is True:
 
                     t_rem = time.perf_counter()
 
-                z = np.where(self.system.u_vector == 0)
-                i = np.arange(k.shape[0])
-                i = np.delete(i, z, axis=0)
+                z = np.array([i for k, i in zip(u, range(u.shape[0]))
+                              if not np.isnan(k)])
 
-                k_reduced = np.mat(k[np.ix_(i, i)])
-                u_reduced = np.delete(u, z, axis=0)
-                f_reduced = np.delete(f, z, axis=0)
+                for i in z:
+                    d = u[i]
+                    for v in range(k.shape[0]):
+                        if v != i:
+                            f[v] += - k[v, i] * d
+                            k[v, i] = 0
+                            k[i, v] = 0
+                        else:
+                            f[v] = d
+                            k[v, i] = 1
 
-                self.system.k_reduced = k_reduced
-                self.system.u_reduced = u_reduced
-                self.system.f_reduced = f_reduced
-                self.removed_indices = z
-                self.remain_indices = i
+                self.system.k_matrix = k
+                self.system.u_vector = u
+                self.system.f_vector = f
 
                 if t_test is True:
 

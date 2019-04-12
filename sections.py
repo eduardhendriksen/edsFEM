@@ -517,8 +517,8 @@ class CHS(Section):
         I_y, I_z = self.calc_I(D, t)
         I_t = self.calc_I_t(D, t)
         Wy_el, Wz_el = self.calc_W(D, t)
-        self.type = 'CHS'
         Section.__init__(self, E, A, I_y, I_z, G, I_t, Wy_el, Wz_el)
+        self.type = 'CHS'
 
     def calc_A(self, D, t):
         """

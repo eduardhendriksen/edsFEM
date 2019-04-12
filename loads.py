@@ -560,6 +560,9 @@ class QLoad():
                     if i != 0:
                         F_vect[6-i] = M1
                         F_vect[12-i] = M2
+            else:
+                raise Exception("Distributed load cannot be distributed " +
+                                "properly at " + self)
 
         F = np.dot(T.T, F_vect)
 

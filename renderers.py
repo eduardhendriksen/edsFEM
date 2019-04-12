@@ -7,15 +7,15 @@ from direct.gui.DirectButton import DirectButton, DirectFrame
 from direct.gui.DirectLabel import DirectLabel
 from panda3d.core import VBase4, AmbientLight, GeomVertexFormat
 from panda3d.core import GeomVertexData, GeomVertexWriter, Geom, GeomLines
-from panda3d.core import GeomNode, GeomTriangles, TextNode, AntialiasAttrib
+from panda3d.core import GeomNode, GeomTriangles, TextNode
 from panda3d.core import PointLight, CollisionNode, CollisionRay
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue
 from panda3d.core import CollisionTube, CollisionSphere
 from edsFEM.renderutils.eventhandlers import ClickHandler
 from edsFEM.renderutils.rendernodes import RenderNode
-from edsFEM.renderutils.profiles import I_Profile
+from edsFEM.renderutils.profiles import I_Profile_Renderer, CHS_Renderer
 import numpy as np
-
+import time
 
 class Renderer(ShowBase):
     """
@@ -25,7 +25,7 @@ class Renderer(ShowBase):
     the buttons to be rendered on-screen and the initial state of the render.
     """
 
-    def __init__(self, curr_file=None, scale='mm'):
+    def __init__(self, render_extents=None, scale='mm'):
         """
         Initializing the Renderer class sets up the render and prepares the
         collision detection for use.
@@ -50,8 +50,14 @@ class Renderer(ShowBase):
         self.window = self.winList[0]
 
         # Create variables
+        self.render_extents = render_extents
+        self.lighting = False
         self.curr_render = None
         self.tooltipText = None
+
+        # Create lighting
+        if self.render_extents is not None:
+            self.make_lighting()
 
         # Lists containing the paths to rendered nodes and beams RenderNodes
         self.Nodes = []
@@ -74,21 +80,14 @@ class Renderer(ShowBase):
         self.plights = []
         self.lightNodePaths = []
 
-        # Add an ambient light
+        # Enables shading
+        self.render.setShaderAuto()
+
+        # Add ambient light
         alight = AmbientLight('alight')
-        alight.setColor(VBase4(0.6, 0.6, 0.6, 1))
+        alight.setColor(VBase4(0.7, 0.7, 0.7, 1))
         alnp = self.render.attachNewNode(alight)
         self.render.setLight(alnp)
-        self.render.setShaderAuto()
-        self.render.setAntialias(AntialiasAttrib.MAuto)
-
-        # add point light
-        plight = PointLight('plight')
-        plight.setColor(VBase4(0.7, 0.7, 0.7, 1))
-        plight.setAttenuation((1, 0, 0))
-        plnp = self.render.attachNewNode(plight)
-        plnp.setPos(0, 0, 1000)
-        self.render.setLight(plnp)
 
         # Add a button to make screenshots
         self.make_button('screenshot')
@@ -1042,7 +1041,7 @@ class Renderer(ShowBase):
 
             if beam.profile.type == 'IBeam':
 
-                render_prof = I_Profile(beam, s, self)
+                render_prof = I_Profile_Renderer(beam, s, self)
 
                 node = render_prof.create_profile()
 
@@ -1058,14 +1057,16 @@ class Renderer(ShowBase):
 
             elif beam.profile.type == 'CHS':
 
-                node = None
-                raise NotImplementedError("Profile type not yet implemented")
+                render_prof = CHS_Renderer(beam, s, self)
+
+                node = render_prof.create_profile()
 
             else:
 
                 raise NotImplementedError("Profile type not yet implemented")
 
             self.beamprofNodePaths.append(self.render.attachNewNode(node))
+            self.beamprofNodePaths[-1].setDepthOffset(-1)
 
     def render_beam_displaced(self, beam, scale='mm', dscale=25):
         """
@@ -1982,6 +1983,44 @@ class Renderer(ShowBase):
             self.sup_NodePaths[-1].setRenderModeThickness(1)
             self.sup_NodePaths[-1].setRenderModePerspective(True)
 
+    def render_point_light(self, position):
+        """
+        Renders a point light at the position specified.
+        """
+        position = np.array(position)
+        plight = PointLight('plight')
+        plight.setColor(VBase4(0.85, 0.85, 0.85, 1))
+        plight.setShadowCaster(True, 1024, 1024)
+        plight.setAttenuation((1, 0, 0))
+        plnp = self.render.attachNewNode(plight)
+        plnp.setPos(*(position))
+        self.render.setLight(plnp)
+
+    def make_lighting(self):
+        """
+        Creates point lights at the top four corners of the render
+        """
+        if self.render_extents is not None:
+            r = self.render_extents
+            l_x = r[1, 0] - r[0, 0]
+            l_y = r[2, 1] - r[0, 1]
+            l_z = np.abs(r[1, 2])
+            l_l = np.max([l_x, l_y, l_z])
+            if self.lighting is False:
+                for p, i in zip(r, range(r.shape[0])):
+                    l_p = np.zeros(3)
+                    if i in [0, 3]:
+                        l_p[0] = p[0] - 0.5 * l_l
+                    else:
+                        l_p[0] = p[0] + 0.5 * l_l
+                    if i in [0, 1]:
+                        l_p[1] = p[1] - 0.5 * l_l
+                    else:
+                        l_p[1] = p[1] + 0.5 * l_l
+                    l_p[2] = p[2] + 0.5*l_l
+                    self.render_point_light(l_p)
+                self.lighting = True
+
     def make_button(self, to_do=None, items=[]):
         """
         This method creates all on-screen buttons for the renderer and attaches
@@ -2207,6 +2246,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'supports'
         self.empty_render(nodes=None, beams=None)
+        self.make_lighting()
 
         for node in nodes:
             self.render_support(node, scale=scale, dscale=dscale)
@@ -2220,6 +2260,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'beams'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=axis)
@@ -2234,6 +2275,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'releases'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale)
@@ -2249,6 +2291,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'sigma'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam_normal_stresses(beam, scale=scale, s_max=s_max)
@@ -2263,6 +2306,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'shear'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam_shear_stresses(beam, scale=scale, s_max=s_max)
@@ -2277,6 +2321,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'v_mises'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam_von_mises(beam, scale=scale, s_max=s_max)
@@ -2291,6 +2336,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'displacements'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2306,6 +2352,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'profiles'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2322,6 +2369,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'q_loads'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2338,6 +2386,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'p_loads'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2355,6 +2404,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'm_loads'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2372,6 +2422,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'moments'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2387,6 +2438,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'normal_forces'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2402,6 +2454,7 @@ class Renderer(ShowBase):
 
         self.curr_render = 'shear_forces'
         self.empty_render(nodes=None)
+        self.make_lighting()
 
         for beam in beams:
             self.render_beam(beam, scale=scale, axis=None)
@@ -2480,8 +2533,33 @@ class Renderer(ShowBase):
                      self.shearstressNodePaths,
                      self.framesPaths]
 
-        if nodes is not None:
+        if self.render_extents is None:
+            self.render_extents = np.zeros((4, 3))
+
             for node in self.Nodes:
+
+                p = np.array(node.r_node_path.getPos())
+
+                if p[0] < self.render_extents[0, 0]:
+                    self.render_extents[0, 0] = p[0]
+                    self.render_extents[3, 0] = p[0]
+                if p[0] > self.render_extents[1, 0]:
+                    self.render_extents[1, 0] = p[0]
+                    self.render_extents[2, 0] = p[0]
+                if p[1] < self.render_extents[0, 1]:
+                    self.render_extents[0, 1] = p[1]
+                    self.render_extents[1, 1] = p[1]
+                if p[1] > self.render_extents[2, 1]:
+                    self.render_extents[2, 1] = p[1]
+                    self.render_extents[3, 1] = p[1]
+                if p[2] > self.render_extents[0, 2]:
+                    for i in range(self.render_extents.shape[0]):
+                        self.render_extents[i, 2] = p[2]
+
+        if nodes is not None:
+
+            for node in self.Nodes:
+
                 node.r_node_path.hide()
                 node.c_node_path.hide()
 

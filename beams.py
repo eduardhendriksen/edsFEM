@@ -140,6 +140,80 @@ class Beam():
             el.modify(p.E, p.A, p.I_y, p.I_z, p.G, p.I_t, p.Wy_el, p.Wz_el,
                       Wy_pl=p.Wy_pl, Wz_pl=p.Wz_pl)
 
+    def change_property(self, E=None, A=None, I_y=None, I_z=None, G=None,
+                        I_t=None, Wy_el=None, Wz_el=None, Wy_pl=None,
+                        Wz_pl=None):
+        """
+        Change the given properties of the beam by changing the element
+        properties of the elements in the beam.
+        """
+        if E is None:
+            if self.profile is not None:
+                E = self.profile.E
+            else:
+                E = self.elements[0].E
+        if A is None:
+            if self.profile is not None:
+                A = self.profile.A
+            else:
+                A = self.elements[0].A
+        if I_y is None:
+            if self.profile is not None:
+                I_y = self.profile.I_y
+            else:
+                I_y = self.elements[0].I_y
+        if I_z is None:
+            if self.profile is not None:
+                I_z = self.profile.I_z
+            else:
+                I_z = self.elements[0].I_z
+        if G is None:
+            if self.profile is not None:
+                G = self.profile.G
+            else:
+                G = self.elements[0].G
+        if I_t is None:
+            if self.profile is not None:
+                I_t = self.profile.I_t
+            else:
+                I_t = self.elements[0].I_t
+        if Wy_el is None:
+            if self.profile is not None:
+                Wy_el = self.profile.Wy_el
+            else:
+                Wy_el = self.elements[0].Wy_el
+        if Wz_el is None:
+            if self.profile is not None:
+                Wz_el = self.profile.Wz_el
+            else:
+                Wz_el = self.elements[0].Wz_el
+        if Wy_pl is None:
+            if self.profile is not None:
+                try:
+                    Wy_pl = self.profile.Wy_pl
+                except AttributeError:
+                    Wy_pl = None
+            else:
+                try:
+                    Wy_pl = self.elements[0].Wy_pl
+                except AttributeError:
+                    Wy_pl = None
+        if Wz_pl is None:
+            if self.profile is not None:
+                try:
+                    Wz_pl = self.profile.Wz_pl
+                except AttributeError:
+                    Wz_pl = None
+            else:
+                try:
+                    Wz_pl = self.elements[0].Wz_pl
+                except AttributeError:
+                    Wz_pl = None
+
+        for el in self.elements:
+            el.modify(E, A, I_y, I_z, G, I_t, Wy_el, Wz_el, Wy_pl=Wy_pl,
+                      Wz_pl=Wz_pl)
+
     def create_beam(self, E, A, I_y, I_z, G, I_t, Wy_el, Wz_el,
                     global_cs=None, a_l=None, sys_eq=False, Wy_pl=None,
                     Wz_pl=None, release=None, segments=12):

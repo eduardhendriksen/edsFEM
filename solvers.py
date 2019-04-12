@@ -48,10 +48,10 @@ class SimpleSolver(Solver):
             import time
             t_t = time.perf_counter()
 
-        k_r = self.system.k_reduced
-        f_r = self.system.f_reduced
+        k = self.system.k_matrix
+        f = self.system.f_vector
 
-        sol_ = scipy.linalg.solve(k_r, f_r, assume_a='pos')
+        sol = scipy.linalg.solve(k, f, assume_a='pos')
 
         for i_ in reversed(range(33)):
 
@@ -63,19 +63,11 @@ class SimpleSolver(Solver):
 
                 tol = 10**(10**(16 - i_))
 
-            if np.allclose(np.dot(k_r, sol_), f_r, atol=tol):
+            if np.allclose(np.dot(k, sol), f, atol=tol):
 
                 print()
                 print("    Solution accuracy {:.1e}".format(tol))
                 print()
-
-                self.system.u_red = sol_
-
-                sol = np.zeros((self.system.k_matrix.shape[0],))
-                c = 0
-                for i in self.system.assembler.remain_indices:
-                    sol[i] = sol_[c]
-                    c += 1
 
                 self.system.u = sol
                 f = np.dot(self.system.k_matrix, self.system.u)
